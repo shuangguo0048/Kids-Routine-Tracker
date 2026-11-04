@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Youan's Daily Routines</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    :root {
+      --bg-color: #F4F7F4;
+      --card-bg: #FFFFFF;
+      --primary: #5F8C5F;
+      --primary-hover: #4E754E;
+      --accent: #E6EFE6;
+      --text-main: #2D3B2D;
+      --text-muted: #7E937E;
+      --shadow-sm: 0 4px 12px rgba(95, 140, 95, 0.08);
+      --shadow-md: 0 8px 24px rgba(95, 140, 95, 0.12);
+      --radius-lg: 24px;
+      --radius-sm: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      font-family: 'Nunito', 'Fredoka', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 16px 40px;
+      overflow-x: hidden;
+    }
+
+    header {
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .profile-section {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .avatar-wrap {
+      position: relative;
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 3px solid #FFF;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      overflow: hidden;
+    }
+
+    .avatar-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .user-info h1 {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--primary);
+      line-height: 1.2;
+    }
+
+    .user-info p {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text-muted);
+    }
+
+    .stats-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .stat-pill {
+      background: #FFF;
+      padding: 8px 18px;
+      border-radius: 30px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 16px;
+      font-weight: 900;
+      color: var(--text-main);
+    }
+
+    .btn-icon {
+      background: #FFF;
+      border: none;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      box-shadow: var(--shadow-sm);
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s, background-color 0.2s;
+    }
+
+    .btn-icon:active {
+      transform: scale(0.92);
+    }
+
+    .mode-bar {
+      width: 100%;
+      max-width: 900px;
+      background: #EAF0EA;
+      padding: 6px;
+      border-radius: 40px;
+      display: flex;
+      gap: 6px;
+      margin-bottom: 24px;
+    }
+
+    .mode-btn {
+      flex: 1;
+      padding: 10px 12px;
+      border: none;
+      border-radius: 30px;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .mode-btn.active {
+      background: #FFF;
+      color: var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .grid-container {
+      width: 100%;
+      max-width: 900px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 18px;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      position: relative;
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      padding: 22px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease, background-color 0.25s ease;
+      min-height: 195px;
+    }
+
+    .card:active {
+      transform: scale(0.96);
+    }
+
+    .bubble-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 105px;
+      height: 105px;
+      transform: translate(-50%, -60%);
+      background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.92), rgba(185, 230, 200, 0.45) 60%, rgba(120, 190, 140, 0.65));
+      border-radius: 50%;
+      box-shadow: inset -5px -5px 12px rgba(255, 255, 255, 0.8), inset 5px 5px 12px rgba(95, 140, 95, 0.25), 0 8px 18px rgba(95, 140, 95, 0.15);
+      backdrop-filter: blur(2px);
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: floatBubble 3s ease-in-out infinite alternate;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    @keyframes floatBubble {
+      0% { transform: translate(-50%, -62%) scale(1); }
+      100% { transform: translate(-50%, -58%) scale(1.05); }
+    }
+
+    .bubble-overlay::before {
+      content: '';
+      position: absolute;
+      top: 18%;
+      left: 22%;
+      width: 20px;
+      height: 12px;
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 50%;
+      transform: rotate(-35deg);
+    }
+
+    .card.completed {
+      background: #EBF4EB;
+      box-shadow: none;
+    }
+
+    .card.completed .bubble-overlay {
+      display: none;
+    }
+
+    .task-icon-box {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: var(--bg-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      margin-bottom: 4px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .task-icon-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .task-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text-main);
+      text-align: center;
+      line-height: 1.25;
+    }
+
+    .card-check-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #D5E5D5;
+      color: #FFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 900;
+      transition: all 0.2s ease;
+    }
+
+    .card.completed .card-check-badge {
+      background: var(--primary);
+    }
+
+    .pop-particle {
+      position: absolute;
+      pointer-events: none;
+      font-size: 18px;
+      z-index: 10;
+      animation: popSpark 0.6s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+    }
+
+    @keyframes popSpark {
+      0% { opacity: 1; transform: translate(0, 0) scale(1); }
+      100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.3); }
+    }
+
+    .alarm-banner {
+      width: 100%;
+      max-width: 900px;
+      background: #FFF3D6;
+      border: 2px solid #FFE099;
+      padding: 14px 20px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .alarm-banner.active {
+      display: flex;
+    }
+
+    .alarm-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      color: #8A6D00;
+    }
+
+    .btn-stop-alarm {
+      background: #FF6B6B;
+      color: #FFF;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal-box {
+      background: #FFF;
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 520px;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 24px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .modal-header h2 {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 22px;
+      color: var(--primary);
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 2px solid #E2E8E2;
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      outline: none;
+    }
+
+    .form-input:focus {
+      border-color: var(--primary);
+    }
+
+    .settings-item-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px;
+      border: 1px solid #EEF2EE;
+      border-radius: 12px;
+      margin-bottom: 8px;
+      background: #FAFCFA;
+    }
+
+    .btn-delete {
+      background: #FFE8E8;
+      color: #D93838;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .btn-upload {
+      background: #EAF0EA;
+      color: var(--primary);
+      padding: 6px 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-block;
+    }
+
+    .btn-primary {
+      width: 100%;
+      background: var(--primary);
+      color: #FFF;
+      border: none;
+      padding: 14px;
+      border-radius: var(--radius-sm);
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .btn-reset {
+      width: 100%;
+      background: #FFF1F1;
+      color: #E53935;
+      border: 2px solid #FFCDD2;
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      margin-top: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="profile-section">
+      <div class="avatar-wrap" id="headerAvatar">👦</div>
+      <div class="user-info">
+        <h1 id="headerTitle">Youan's Daily Routines</h1>
+        <p id="routineStatusBadge">☀️ Morning Routine</p>
+      </div>
+    </div>
+
+    <div class="stats-group">
+      <div class="stat-pill">🔥 <span id="streakCount">0</span> Days</div>
+      <div class="stat-pill">⭐ <span id="starCount">0</span> Stars</div>
+      <button class="btn-icon" id="btnSettings" title="Parent Settings">⚙️</button>
+    </div>
+  </header>
+
+  <div class="alarm-banner" id="alarmBanner">
+    <div class="alarm-info">
+      <span style="font-size: 24px;">🎵</span>
+      <div>
+        <div id="alarmTitle" style="font-size: 16px;">Routine Alarm Playing</div>
+        <div style="font-size: 13px; opacity: 0.8;">Time to complete your habits!</div>
+      </div>
+    </div>
+    <button class="btn-stop-alarm" id="btnStopAlarm">⏹️ Stop Music</button>
+  </div>
+
+  <div class="mode-bar">
+    <button class="mode-btn active" data-mode="auto">⏰ Auto (Time Based)</button>
+    <button class="mode-btn" data-mode="morning">☀️ Morning Only</button>
+    <button class="mode-btn" data-mode="evening">🌙 Evening Only</button>
+    <button class="mode-btn" data-mode="all">👁️ Show All</button>
+  </div>
+
+  <div class="grid-container" id="taskGrid"></div>
+
+  <!-- Parent Gate Modal -->
+  <div class="modal-overlay" id="parentGateModal">
+    <div class="modal-box" style="text-align: center; max-width: 380px;">
+      <h2 style="margin-bottom: 12px; font-family: 'Fredoka', sans-serif; color: var(--primary);">🔒 Parent Control</h2>
+      <p style="margin-bottom: 16px; font-weight: 800; color: var(--text-muted);" id="mathProblemText">Solve: 2 + 3 = ?</p>
+      <input type="number" id="mathAnswerInput" class="form-input" style="text-align: center; font-size: 20px; font-weight: 800;" placeholder="Answer">
+      <button class="btn-primary" id="btnVerifyGate">Unlock Settings</button>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2>⚙️ Settings & Customization</h2>
+        <button class="btn-icon" id="btnCloseSettings">✕</button>
+      </div>
+
+      <!-- Child Profile Section -->
+      <div class="form-group">
+        <label>Child's Name</label>
+        <input type="text" id="settingChildName" class="form-input" placeholder="Youan">
+      </div>
+
+      <div class="form-group">
+        <label>Avatar Display Style & Content</label>
+        <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;">
+          <select id="settingAvatarType" class="form-input" style="flex: 1;">
+            <option value="emoji">Use Emoji</option>
+            <option value="photo">Use Uploaded Photo</option>
+          </select>
+          <input type="text" id="settingAvatarEmoji" class="form-input" placeholder="👦" style="width: 70px; text-align: center;">
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <label class="btn-upload" style="flex: 1; text-align: center;">
+            📷 Upload Photo File
+            <input type="file" id="settingAvatarPhotoInput" accept="image/*" style="display: none;">
+          </label>
+          <button type="button" id="btnClearAvatarPhoto" class="btn-delete" style="padding: 8px 12px;">Clear Photo</button>
+        </div>
+        <span id="avatarPhotoStatus" style="font-size: 12px; color: var(--primary); font-weight: 800; display: block; margin-top: 4px;"></span>
+      </div>
+
+      <hr style="border: none; border-top: 1px solid #EEF2EE; margin: 20px 0;">
+
+      <!-- Custom Alarms & Ringtones Management -->
+      <h3 style="font-size: 16px; margin-bottom: 12px; color: var(--primary);">⏰ Alarm Schedule & Ringtone Management</h3>
+      <div id="settingsAlarmList"></div>
+      
+      <div style="background: #F8FAF8; padding: 12px; border-radius: var(--radius-sm); margin-top: 10px;">
+        <h4 style="font-size: 14px; margin-bottom: 8px;">+ Add New Alarm</h4>
+        <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+          <input type="text" id="newAlarmLabel" class="form-input" placeholder="Alarm Title (e.g. Snack Time)" style="flex: 2;">
+          <input type="time" id="newAlarmTime" class="form-input" value="12:00" style="flex: 1;">
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <select id="newAlarmTone" class="form-input" style="flex: 1;">
+            <option value="joy">Morning Joy</option>
+            <option value="lullaby">Bedtime Lullaby</option>
+            <option value="chime">Fun Chime</option>
+          </select>
+          <button class="btn-primary" id="btnAddAlarm" style="margin: 0; width: auto; padding: 0 20px; background: #7A9E7A;">Add Alarm</button>
+        </div>
+      </div>
+
+      <hr style="border: none; border-top: 1px solid #EEF2EE; margin: 20px 0;">
+
+      <!-- Habit Tasks Management -->
+      <h3 style="font-size: 16px; margin-bottom: 12px; color: var(--primary);">📝 Habit List & Photo Management</h3>
+      <div id="settingsTaskList"></div>
+
+      <div style="background: #F8FAF8; padding: 14px; border-radius: var(--radius-sm); margin-top: 14px;">
+        <h4 style="font-size: 14px; margin-bottom: 10px;">+ Add New Habit Task</h4>
+        <input type="text" id="newHabitTitle" class="form-input" placeholder="Habit Title (e.g. Pack Bag)" style="margin-bottom: 8px;">
+        <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+          <select id="newHabitRoutine" class="form-input" style="flex: 1;">
+            <option value="morning">☀️ Morning Routine</option>
+            <option value="evening">🌙 Evening Routine</option>
+          </select>
+          <input type="text" id="newHabitEmoji" class="form-input" placeholder="Emoji" style="width: 80px; text-align: center;">
+        </div>
+        <div style="margin-bottom: 10px;">
+          <label class="btn-upload" style="width: 100%; text-align: center;">
+            📷 Optional: Upload Real Photo for Task
+            <input type="file" id="newTaskPhotoInput" accept="image/*" style="display: none;">
+          </label>
+          <span id="newTaskPhotoStatus" style="font-size: 12px; color: var(--primary); display: block; margin-top: 4px; text-align: center;"></span>
+        </div>
+        <button class="btn-primary" id="btnAddHabit" style="margin-top: 0; background: #7A9E7A;">Add Task</button>
+      </div>
+
+      <hr style="border: none; border-top: 1px solid #EEF2EE; margin: 20px 0;">
+
+      <!-- Save & Reset Action Buttons -->
+      <button type="button" class="btn-primary" id="btnSaveSettings" onclick="doSaveSettings()">Save All Settings</button>
+      <button type="button" class="btn-reset" id="btnResetProgress" onclick="doResetProgress()">🔄 Reset All Daily Progress & Stars</button>
+    </div>
+  </div>
+
+  <script>
+    let audioCtx = null;
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function playBubblePopSound() {
+      try {
+        initAudio();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        
+        const now = audioCtx.currentTime;
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(300, now);
+        osc.frequency.exponentialRampToValueAtTime(800, now + 0.08);
+        
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+        
+        osc.start(now);
+        osc.stop(now + 0.08);
+      } catch(e) {}
+    }
+
+    function playAlarmTone(toneType) {
+      try {
+        initAudio();
+        const now = audioCtx.currentTime;
+
+        if (toneType === 'lullaby') {
+          const chordNotes = [329.63, 392.00, 493.88, 587.33];
+          chordNotes.forEach((freq, idx) => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, now + idx * 0.25);
+            gain.gain.setValueAtTime(0.15, now + idx * 0.25);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.25 + 0.6);
+            osc.start(now + idx * 0.25);
+            osc.stop(now + idx * 0.25 + 0.6);
+          });
+        } else if (toneType === 'chime') {
+          const notes = [440, 554.37, 659.25, 880];
+          notes.forEach((freq, idx) => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(freq, now + idx * 0.1);
+            gain.gain.setValueAtTime(0.1, now + idx * 0.1);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.1 + 0.2);
+            osc.start(now + idx * 0.1);
+            osc.stop(now + idx * 0.1 + 0.2);
+          });
+        } else {
+          const notes = [523.25, 659.25, 783.99, 1046.50];
+          notes.forEach((freq, idx) => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+            gain.gain.setValueAtTime(0.2, now + idx * 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.3);
+            osc.start(now + idx * 0.08);
+            osc.stop(now + idx * 0.08 + 0.3);
+          });
+        }
+      } catch(e) {}
+    }
+
+    let state = {
+      childName: "Youan",
+      avatarType: "emoji",
+      avatarEmoji: "👦",
+      avatarImg: null,
+      streak: 3,
+      stars: 12,
+      alarms: [
+        { id: 1, label: "Morning Wake-up", time: "07:00", tone: "joy", enabled: true },
+        { id: 2, label: "Bedtime Lullaby", time: "20:27", tone: "lullaby", enabled: true }
+      ],
+      tasks: [
+        { id: 1, title: "Brush Teeth", emoji: "🪥", photo: null, routine: "morning", completed: false },
+        { id: 2, title: "Drink Milk", emoji: "🥛", photo: null, routine: "morning", completed: false },
+        { id: 3, title: "Get Dressed", emoji: "👕", photo: null, routine: "morning", completed: false },
+        { id: 4, title: "Nasal Spray", emoji: "👃", photo: null, routine: "evening", completed: false },
+        { id: 5, title: "Bath Time", emoji: "🛁", photo: null, routine: "evening", completed: false },
+        { id: 6, title: "Read Story", emoji: "📖", photo: null, routine: "evening", completed: false }
+      ],
+      currentMode: "auto"
+    };
+
+    let tempNewTaskPhoto = null;
+
+    function loadState() {
+      const saved = localStorage.getItem('youan_routine_state_v10');
+      if (saved) {
+        try { state = JSON.parse(saved); } catch(e) {}
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem('youan_routine_state_v10', JSON.stringify(state));
+    }
+
+    const taskGrid = document.getElementById('taskGrid');
+    const headerTitle = document.getElementById('headerTitle');
+    const headerAvatar = document.getElementById('headerAvatar');
+    const streakCount = document.getElementById('streakCount');
+    const starCount = document.getElementById('starCount');
+    const routineStatusBadge = document.getElementById('routineStatusBadge');
+
+    function renderApp() {
+      headerTitle.textContent = `${state.childName}'s Daily Routines`;
+      
+      if (state.avatarType === 'photo' && state.avatarImg) {
+        headerAvatar.innerHTML = `<img src="${state.avatarImg}" alt="avatar" onerror="this.parentElement.innerHTML='${state.avatarEmoji || '👦'}';">`;
+      } else {
+        headerAvatar.innerHTML = state.avatarEmoji || "👦";
+      }
+
+      streakCount.textContent = state.streak;
+      starCount.textContent = state.stars;
+
+      const now = new Date();
+      const hour = now.getHours();
+      let activeRoutine = hour < 15 ? 'morning' : 'evening';
+      
+      if (state.currentMode === 'morning') activeRoutine = 'morning';
+      if (state.currentMode === 'evening') activeRoutine = 'evening';
+
+      routineStatusBadge.textContent = activeRoutine === 'morning' ? '☀️ Morning Routine' : '🌙 Evening Routine';
+
+      taskGrid.innerHTML = '';
+      
+      const filteredTasks = state.tasks.filter(t => {
+        if (state.currentMode === 'all') return true;
+        if (state.currentMode === 'morning') return t.routine === 'morning';
+        if (state.currentMode === 'evening') return t.routine === 'evening';
+        return t.routine === activeRoutine;
+      });
+
+      filteredTasks.forEach(task => {
+        const card = document.createElement('div');
+        card.className = `card ${task.completed ? 'completed' : ''}`;
+        
+        const iconContent = task.photo ? 
+          `<img src="${task.photo}" alt="${task.title}" onerror="this.parentElement.innerHTML='${task.emoji}';">` : 
+          task.emoji;
+
+        card.innerHTML = `
+          <div class="card-check-badge">${task.completed ? '✓' : ''}</div>
+          ${!task.completed ? '<div class="bubble-overlay"></div>' : ''}
+          <div class="task-icon-box">${iconContent}</div>
+          <div class="task-title">${task.title}</div>
+        `;
+
+        card.addEventListener('click', (e) => {
+          if (!task.completed) {
+            playBubblePopSound();
+            createPopParticles(e.clientX || window.innerWidth/2, e.clientY || window.innerHeight/2);
+            task.completed = true;
+            state.stars += 1;
+            saveState();
+            renderApp();
+            
+            if (filteredTasks.every(t => t.completed)) {
+              playAlarmTone('joy');
+              confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+            }
+          } else {
+            task.completed = false;
+            saveState();
+            renderApp();
+          }
+        });
+
+        taskGrid.appendChild(card);
+      });
+    }
+
+    function createPopParticles(x, y) {
+      for (let i = 0; i < 6; i++) {
+        const p = document.createElement('div');
+        p.className = 'pop-particle';
+        p.textContent = ['✨', '🌟', '💧', '⭐'][Math.floor(Math.random()*4)];
+        const angle = (i / 6) * Math.PI * 2;
+        const dist = 40 + Math.random() * 30;
+        p.style.setProperty('--dx', `${Math.cos(angle) * dist}px`);
+        p.style.setProperty('--dy', `${Math.sin(angle) * dist}px`);
+        p.style.left = `${x}px`;
+        p.style.top = `${y}px`;
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 600);
+      }
+    }
+
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.currentMode = btn.dataset.mode;
+        renderApp();
+      });
+    });
+
+    // Parent Gate
+    const btnSettings = document.getElementById('btnSettings');
+    const parentGateModal = document.getElementById('parentGateModal');
+    const mathProblemText = document.getElementById('mathProblemText');
+    const mathAnswerInput = document.getElementById('mathAnswerInput');
+    const btnVerifyGate = document.getElementById('btnVerifyGate');
+    const settingsModal = document.getElementById('settingsModal');
+    const btnCloseSettings = document.getElementById('btnCloseSettings');
+
+    let numA = 2, numB = 3;
+    btnSettings.addEventListener('click', () => {
+      numA = Math.floor(Math.random() * 5) + 2;
+      numB = Math.floor(Math.random() * 5) + 1;
+      mathProblemText.textContent = `Parent Gate — Solve: ${numA} + ${numB} = ?`;
+      mathAnswerInput.value = '';
+      parentGateModal.classList.add('open');
+      setTimeout(() => mathAnswerInput.focus(), 100);
+    });
+
+    btnVerifyGate.addEventListener('click', () => {
+      if (parseInt(mathAnswerInput.value) === numA + numB) {
+        parentGateModal.classList.remove('open');
+        openSettings();
+      } else {
+        alert('Incorrect answer. Try again!');
+        mathAnswerInput.value = '';
+      }
+    });
+
+    btnCloseSettings.addEventListener('click', () => {
+      settingsModal.classList.remove('open');
+    });
+
+    // Settings Modal
+    function openSettings() {
+      document.getElementById('settingChildName').value = state.childName;
+      document.getElementById('settingAvatarType').value = state.avatarType || 'emoji';
+      document.getElementById('settingAvatarEmoji').value = state.avatarEmoji || '';
+      document.getElementById('avatarPhotoStatus').textContent = state.avatarImg ? '✓ Photo Loaded' : 'No photo uploaded';
+      renderSettingsAlarmList();
+      renderSettingsTaskList();
+      settingsModal.classList.add('open');
+    }
+
+    // Avatar Photo Handlers
+    document.getElementById('settingAvatarPhotoInput').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          state.avatarImg = evt.target.result;
+          document.getElementById('avatarPhotoStatus').textContent = '✓ Photo Selected & Loaded';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    document.getElementById('btnClearAvatarPhoto').addEventListener('click', () => {
+      state.avatarImg = null;
+      document.getElementById('avatarPhotoStatus').textContent = '✓ Photo Cleared';
+    });
+
+    // Alarm List Management
+    function renderSettingsAlarmList() {
+      const list = document.getElementById('settingsAlarmList');
+      list.innerHTML = '';
+      state.alarms.forEach((alarm, idx) => {
+        const item = document.createElement('div');
+        item.className = 'settings-item-row';
+        item.innerHTML = `
+          <input type="checkbox" ${alarm.enabled ? 'checked' : ''} style="width:18px; height:18px;" title="Enable">
+          <input type="text" class="form-input" value="${alarm.label}" style="flex:1.5; padding:6px 8px;">
+          <input type="time" class="form-input" value="${alarm.time}" style="flex:1; padding:6px 8px;">
+          <select class="form-input" style="flex:1.3; padding:6px 4px; font-size:12px;">
+            <option value="joy" ${alarm.tone==='joy'?'selected':''}>Morning Joy</option>
+            <option value="lullaby" ${alarm.tone==='lullaby'?'selected':''}>Bedtime Lullaby</option>
+            <option value="chime" ${alarm.tone==='chime'?'selected':''}>Fun Chime</option>
+          </select>
+          <button class="btn-delete">Del</button>
+        `;
+        const [chk, labelInput, timeInput, toneSelect, delBtn] = item.children;
+        chk.addEventListener('change', () => alarm.enabled = chk.checked);
+        labelInput.addEventListener('change', () => alarm.label = labelInput.value);
+        timeInput.addEventListener('change', () => alarm.time = timeInput.value);
+        toneSelect.addEventListener('change', () => {
+          alarm.tone = toneSelect.value;
+          playAlarmTone(alarm.tone);
+        });
+        delBtn.addEventListener('click', () => {
+          state.alarms.splice(idx, 1);
+          renderSettingsAlarmList();
+        });
+        list.appendChild(item);
+      });
+    }
+
+    document.getElementById('btnAddAlarm').addEventListener('click', () => {
+      const label = document.getElementById('newAlarmLabel').value.trim() || 'New Alarm';
+      const time = document.getElementById('newAlarmTime').value || '12:00';
+      const tone = document.getElementById('newAlarmTone').value;
+      state.alarms.push({ id: Date.now(), label, time, tone, enabled: true });
+      document.getElementById('newAlarmLabel').value = '';
+      renderSettingsAlarmList();
+    });
+
+    // Task Photo & Task List Management
+    document.getElementById('newTaskPhotoInput').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          tempNewTaskPhoto = evt.target.result;
+          document.getElementById('newTaskPhotoStatus').textContent = '✓ Task Photo Selected';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    function renderSettingsTaskList() {
+      const list = document.getElementById('settingsTaskList');
+      list.innerHTML = '';
+      state.tasks.forEach((t, idx) => {
+        const item = document.createElement('div');
+        item.className = 'settings-item-row';
+        const displayMedia = t.photo ? `<img src="${t.photo}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;">` : `<span style="font-size:20px;">${t.emoji}</span>`;
+        item.innerHTML = `
+          ${displayMedia}
+          <span style="flex: 1; font-weight: 800; font-size: 13px;">${t.title} (${t.routine})</span>
+          <label class="btn-upload" style="padding:4px 8px; font-size:11px;">
+            Photo
+            <input type="file" accept="image/*" style="display:none;">
+          </label>
+          <button class="btn-delete">Del</button>
+        `;
+        
+        const photoInput = item.querySelector('input[type="file"]');
+        photoInput.addEventListener('change', (e) => {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+              t.photo = evt.target.result;
+              renderSettingsTaskList();
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+
+        item.querySelector('.btn-delete').addEventListener('click', () => {
+          state.tasks.splice(idx, 1);
+          renderSettingsTaskList();
+        });
+        list.appendChild(item);
+      });
+    }
+
+    document.getElementById('btnAddHabit').addEventListener('click', () => {
+      const title = document.getElementById('newHabitTitle').value.trim();
+      const emoji = document.getElementById('newHabitEmoji').value.trim() || '⭐';
+      const routine = document.getElementById('newHabitRoutine').value;
+      if (!title) return;
+      state.tasks.push({
+        id: Date.now(),
+        title,
+        emoji,
+        photo: tempNewTaskPhoto,
+        routine,
+        completed: false
+      });
+      document.getElementById('newHabitTitle').value = '';
+      document.getElementById('newHabitEmoji').value = '';
+      document.getElementById('newTaskPhotoStatus').textContent = '';
+      tempNewTaskPhoto = null;
+      renderSettingsTaskList();
+    });
+
+    // Directly Exposed Click Handlers (Prevents Event Blockade)
+    function doSaveSettings() {
+      state.childName = document.getElementById('settingChildName').value || 'Youan';
+      state.avatarType = document.getElementById('settingAvatarType').value;
+      state.avatarEmoji = document.getElementById('settingAvatarEmoji').value || '👦';
+      saveState();
+      settingsModal.classList.remove('open');
+      renderApp();
+    }
+
+    function doResetProgress() {
+      if (confirm('Are you sure you want to reset all completed tasks, star counters, and streak days to 0?')) {
+        state.tasks.forEach(t => t.completed = false);
+        state.stars = 0;
+        state.streak = 0;
+        saveState();
+        settingsModal.classList.remove('open');
+        renderApp();
+      }
+    }
+
+    // Alarm Monitoring Interval
+    let activeAlarmId = null;
+    let currentAlarmToneToPlay = 'joy';
+    setInterval(() => {
+      const now = new Date();
+      const timeStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+      
+      const triggeredAlarm = state.alarms.find(a => a.enabled && a.time === timeStr);
+      if (triggeredAlarm && activeAlarmId !== triggeredAlarm.id) {
+        currentAlarmToneToPlay = triggeredAlarm.tone || 'joy';
+        triggerAlarm(triggeredAlarm.label);
+        activeAlarmId = triggeredAlarm.id;
+      }
+    }, 10000);
+
+    function triggerAlarm(title) {
+      document.getElementById('alarmTitle').textContent = title;
+      document.getElementById('alarmBanner').classList.add('active');
+      playAlarmTone(currentAlarmToneToPlay);
+    }
+
+    document.getElementById('btnStopAlarm').addEventListener('click', () => {
+      document.getElementById('alarmBanner').classList.remove('active');
+      activeAlarmId = null;
+    });
+
+    loadState();
+    renderApp();
+  </script>
+</body>
+</html>
